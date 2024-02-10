@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" type="image/png" sizes="32x32" href="../images/logo.png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="../styles/styles.css"  type="text/css" rel="stylesheet">
+  <title>Home</title>
+</head>
+<body>
+    <div id="wrapper">
+        <header>
+          <!-- Navigation -->
+          <a id="logo" href="/"
+            ><img id="logo-img" src="./images/logo.png" alt=""
+          /></a>
+  
+          <nav>
+            <div>
+              <a href="/dashboard">Paintings</a>
+            </div>
+  
+            <!-- Logged-in users -->
+            {{if .}}
+              <div class="user">
+                <a href="/create">Add Painting</a>
+                <a href="javascript:void(0)" id="logoutBtn">Logout</a>
+              </div>
+            {{else}}
+            <!-- Guest users -->
+              <div class="guest">
+                <a href="/login">Login</a>
+                <a href="/register">Register</a>
+              </div>
+            {{end}}
+          </nav>
+        </header>
+  </div>
+        <main id="content">
+          <!-- Home page -->
+        </main>
+      <footer>
+        <p>@ArtGallery</p>
+      </footer>
+</body>
+</html>
