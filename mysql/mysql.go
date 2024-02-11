@@ -1,7 +1,7 @@
 package mysql
 
 import (
-	"art_gallery/model"
+	model "art_gallery/models"
 	"database/sql"
 	"fmt"
 	"time"
@@ -53,7 +53,7 @@ func (r *MySQLRepository) GetAll() ([]model.Painting, error) {
 	return paintings, nil
 }
 
-func (r *MySQLRepository) Insert(p *model.Painting) error {
+func (r *MySQLRepository) AddPainting(p *model.Painting) error {
 	if r.client == nil {
 		return fmt.Errorf("mysql repository is not initilized")
 	}
@@ -167,6 +167,43 @@ func (r *MySQLRepository) SellPainting(id string) error {
 	}
 
 	_, err := r.client.Exec("UPDATE paintings SET date_of_sale = ? WHERE id = ?", time.Now().String(), id)
+
+	return err
+}
+
+func (r *MySQLRepository) FindByUserEmail(email string) (*model.User, error) {
+	if r.client == nil {
+		return nil, fmt.Errorf("mysql repository is not initilized")
+	}
+
+	rows, err := r.client.Query("SELECT * FROM users WHERE email = ?", email)
+	if err != nil {
+		return nil, fmt.Errorf("mysql query failure: %w", err)
+	}
+	defer rows.Close()
+
+	var users *model.User
+
+	for rows.Next() {
+		var result model.User
+		var dateOfReg string
+		rows.Scan(&result.ID, &result.FirstName, &result.LastName, &dateOfReg, &result.Email, &result.Password)
+		users = &result
+		users.DateOfRegistration, _ = time.Parse("Jan 2, 2006 at 3:04pm (MST)", dateOfReg)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating users: %w", err)
+	}
+	return users, nil
+}
+
+func (r *MySQLRepository) AddUser(u *model.User) error {
+	if r.client == nil {
+		return fmt.Errorf("mysql repository is not initilized")
+	}
+
+	_, err := r.client.Exec("INSERT INTO users (id, first_name, last_name, date_of_registration, email, password) VALUES (?,?,?,?,?,?)",
+		u.ID, u.FirstName, u.LastName, u.DateOfRegistration, u.Email, u.Password)
 
 	return err
 }

@@ -16,4 +16,5 @@ type Painting struct {
 	Width             int
 	Height            int
 	Genre             Genre
+	Price             float64
 }

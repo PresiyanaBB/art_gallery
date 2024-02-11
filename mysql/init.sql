@@ -25,5 +25,6 @@
 -- `width`  INT NULL,
 -- `height`  INT NULL,
 -- `genre`  VARCHAR(36),
+-- `price` DOUBLE,
 -- PRIMARY KEY (`id`),
 -- FOREIGN KEY (genre) REFERENCES genres(id));

@@ -11,20 +11,23 @@
     <div id="wrapper">
         <header>
           <!-- Navigation -->
-          <a id="logo" href="/"
-            ><img id="logo-img" src="./images/logo.png" alt=""
-          /></a>
-  
+          <a id="logo" href="/"><img id="logo-img" src="./images/logo.png" alt=""/></a>
           <nav>
+            {{if .Active}}
+              <div id="greeting">
+                  <p>Hello, {{.User.FirstName}}</p>
+              </div>
+            {{end}}
+
             <div>
               <a href="/dashboard">Paintings</a>
             </div>
   
             <!-- Logged-in users -->
-            {{if .}}
+            {{if .Active}}
               <div class="user">
                 <a href="/create">Add Painting</a>
-                <a href="javascript:void(0)" id="logoutBtn">Logout</a>
+                <a href="/logout" id="logoutBtn">Logout</a>
               </div>
             {{else}}
             <!-- Guest users -->
@@ -38,6 +41,18 @@
   </div>
         <main id="content">
           <!-- Home page -->
+          <div class="row">
+            {{range $i, $v := .Paint}}
+            <h2>Paintings</h2>
+              <section id="dashboard">
+                <div class="product">
+                  <img src="{{$v.Src}}"/>
+                  <p class="title">{{$v.Title}}</p>
+                  <p><strong>Price:</strong><span class="price">{{$v.Price}}</span>$</p>
+                  <!-- <a class="details-btn" href="/details/${p._id}">Details</a> -->
+                </div>
+            {{end}}
+        </div>
         </main>
       <footer>
         <p>@ArtGallery</p>

@@ -9,7 +9,7 @@ body {
   overflow: auto;
   width: 97vw;
   font-family: 'Alkalami', serif;
-font-family: 'Kaushan Script', cursive;
+  font-family: 'Kaushan Script', cursive;
 }
 
 header {
@@ -32,6 +32,13 @@ nav {
   display: flex;
   justify-content: space-between;
   
+}
+
+#greeting {
+  color: rgb(235, 76, 102);
+  margin-top: -0.60em;
+  margin-right: 7em;
+  font-weight: 400;
 }
 
 #home {
