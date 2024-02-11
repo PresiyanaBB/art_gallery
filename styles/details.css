@@ -58,8 +58,9 @@ h4 {
 }
 
 p {
+  margin-top: -0.35em;
   text-align: center;
-  font-size: 19px;
+  font-size: 20px;
 }
 
 span {
