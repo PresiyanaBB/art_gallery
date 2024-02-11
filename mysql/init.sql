@@ -21,7 +21,6 @@
 -- `src` VARCHAR(1024) NOT NULL,
 -- `author` VARCHAR(1024) NOT NULL,
 -- `date_of_publication` VARCHAR(1024) NULL,
--- `date_of_sale` VARCHAR(1024) NULL,
 -- `width`  INT NULL,
 -- `height`  INT NULL,
 -- `genre`  VARCHAR(36),

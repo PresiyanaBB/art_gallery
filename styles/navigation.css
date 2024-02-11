@@ -41,6 +41,12 @@ nav {
   font-weight: 400;
 }
 
+#genre-drop-down {
+  color: rgb(235, 76, 102);
+  padding: 20px;
+  font-size:x-large;
+}
+
 #home {
   color: rgb(227, 163, 174);
 }

@@ -1,12 +1,20 @@
 @import url(https://fonts.googleapis.com/css?family=Roboto:300);
 
+#summary {
+  margin: auto;
+  width: 100%;
+  text-align: left;
+  font-size: small;
+  color: rgb(240, 14, 52);
+}
+
 .login-page {
   width: 360px;
   padding: 8% 0 0;
   margin: auto;
 }
 .form {
-  background: rgb(248, 231, 234);
+  background: rgb(252, 207, 215);
   max-width: 440px;
   margin: auto;
   margin-top: 50px;
@@ -19,13 +27,18 @@
   box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
 }
 
+#select-img-btn{
+  font-size: 8px;
+  padding: 10px;
+  margin-bottom: 1.5em;
+}
+
 .form h2 {
   margin-bottom: 50px;
   font-size: 30px;
 }
 
 .form input {
-
   outline: 0;
   background: #f2f2f2;
   width: 100%;

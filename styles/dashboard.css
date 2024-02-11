@@ -5,6 +5,28 @@
   justify-content:center ;
 
 }
+
+#buy-product {
+  font-family: 'Alkalami', serif;
+  font-family: 'Kaushan Script', cursive;
+  text-transform: uppercase;
+  outline: 0;
+  background: rgb(231, 103, 124);
+  width: 100%;
+  border: 0;
+  padding: 15px;
+  color: #ffffff;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+#buy-product:hover,
+#buy-product:active,
+#buy-product:focus {
+  background: #bd2c2c;
+}
+
  h2 {
   text-align: center;
   font-size: 50px;
@@ -60,4 +82,9 @@ box-shadow: -4px 3px 25px 1px rgba(0,0,0,0.55);
 
 h2 {
   color: rgb(240, 14, 52);
+}
+
+.product button span {
+  padding: 10px;
+  margin: auto;
 }

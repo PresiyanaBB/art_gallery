@@ -10,6 +10,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/google/uuid"
@@ -29,18 +30,28 @@ type gallery struct {
 }
 
 func (g *gallery) Run() error {
+	// g.app.RemoveAllGenres()
+	// for _, v := range model.GenreTypesString {
+	// 	var genre model.Genre
+	// 	genre.ID = uuid.New().String()
+	// 	genre.Name = v
+	// 	g.app.AddGenre(&genre)
+	// }
+
 	//load static files - images and css
 	g.mux.Handle("/styles/", http.StripPrefix("/styles/", http.FileServer(http.Dir("./styles"))))
 	g.mux.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("./images"))))
 	//handle functions
+	//user auth
 	g.mux.HandleFunc("/", g.handleMain)
 	g.mux.HandleFunc("/login", g.handleLogin)
 	g.mux.HandleFunc("/logout", g.handleLogout)
 	g.mux.HandleFunc("/register", g.handleRegister)
-	g.mux.HandleFunc("/create", g.handleCreate)
 	g.mux.HandleFunc("/enter_account", g.handleEnterAccount)
 	g.mux.HandleFunc("/create_account", g.handleCreateAccount)
-	// g.mux.HandleFunc("/", g.handle)
+	//
+	g.mux.HandleFunc("/create", g.handleCreate)
+	g.mux.HandleFunc("/create_painting", g.handleCreatePainting)
 	//load html templates
 	g.templateIndex = template.Must(template.ParseFiles("./templates/index.html"))
 	g.templateLogin = template.Must(template.ParseFiles("./templates/login.html"))
@@ -90,10 +101,6 @@ func (g *gallery) handleRegister(writer http.ResponseWriter, request *http.Reque
 	g.templateRegister.Execute(writer, struct{}{})
 }
 
-func (g *gallery) handleCreate(writer http.ResponseWriter, request *http.Request) {
-	g.templateCreate.Execute(writer, struct{}{})
-}
-
 func (g *gallery) handleEnterAccount(writer http.ResponseWriter, request *http.Request) {
 	err := request.ParseForm()
 	if err != nil {
@@ -111,7 +118,7 @@ func (g *gallery) handleEnterAccount(writer http.ResponseWriter, request *http.R
 	hashedPassword := hex.EncodeToString(hashedBytes)
 
 	user, _ := g.app.FindByUserEmail(email)
-	if err != nil || user == nil {
+	if err != nil || user == nil || hashedPassword != user.Password {
 		http.Redirect(writer, request, "/login", http.StatusFound)
 		return
 	}
@@ -169,6 +176,47 @@ func (g *gallery) handleCreateAccount(writer http.ResponseWriter, request *http.
 	hasActiveUser = true
 	activeUser = new_user
 	g.app.AddUser(&activeUser)
+	http.Redirect(writer, request, "/", http.StatusFound)
+}
+
+func (g *gallery) handleCreate(writer http.ResponseWriter, request *http.Request) {
+	genres, _ := g.app.GetAllGenres()
+	g.templateCreate.Execute(writer, genres)
+}
+
+func (g *gallery) handleCreatePainting(writer http.ResponseWriter, request *http.Request) {
+	err := request.ParseForm()
+	if err != nil {
+		log.Printf("error parsing html form: %v", err)
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	name := request.Form.Get("name")
+	img := request.Form.Get("imageUrl")
+	category := request.Form.Get("category")
+	height := request.Form.Get("height")
+	width := request.Form.Get("width")
+	description := request.Form.Get("description")
+	price := request.Form.Get("price")
+
+	var painting model.Painting
+	painting.ID = uuid.New().String()
+	painting.Author = activeUser
+	painting.DateOfPublication = time.Now()
+	painting.Description = description
+	painting.Price, _ = strconv.ParseFloat(price, 64)
+	painting.Title = name
+	painting.Src = template.URL(img)
+	var gg *model.Genre
+	gg, _ = g.app.FindGenre(category)
+	if gg != nil {
+		painting.Genre = *gg
+	}
+	painting.Height, _ = strconv.Atoi(height)
+	painting.Width, _ = strconv.Atoi(width)
+
+	g.app.AddPainting(&painting)
 	http.Redirect(writer, request, "/", http.StatusFound)
 }
 

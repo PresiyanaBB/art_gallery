@@ -11,14 +11,13 @@
     <div id="wrapper">
         <header>
           <!-- Navigation -->
-          <a id="logo" href="/"><img id="logo-img" src="./images/logo.png" alt=""/></a>
+          <a id="logo" href="/"><img id="logo-img" src="./images/logo.png" alt="logo"/></a>
           <nav>
             {{if .Active}}
               <div id="greeting">
                   <p>Hello, {{.User.FirstName}}</p>
               </div>
             {{end}}
-
             <div>
               <a href="/dashboard">Paintings</a>
             </div>
@@ -39,21 +38,42 @@
           </nav>
         </header>
   </div>
-        <main id="content">
-          <!-- Home page -->
-          <div class="row">
-            {{range $i, $v := .Paint}}
-            <h2>Paintings</h2>
-              <section id="dashboard">
-                <div class="product">
-                  <img src="{{$v.Src}}"/>
-                  <p class="title">{{$v.Title}}</p>
-                  <p><strong>Price:</strong><span class="price">{{$v.Price}}</span>$</p>
-                  <!-- <a class="details-btn" href="/details/${p._id}">Details</a> -->
-                </div>
-            {{end}}
+        <main id="content" style="margin-top: 5em;">
+    <!-- Home page -->
+    <div class="row">
+        <h2>Paintings</h2>
+        <section id="dashboard">
+          {{range .Paint}}
+          {{if not $.Active}}
+          <div class="product">
+            <p class="title">{{.Title}}</p>
+            <img src="{{.Src}}" alt="some-img"/>
+            <div id="summary">
+                description : {{.Description}} <br>
+                autor : {{.Author.FirstName}} {{.Author.LastName}} <br>
+                size : {{.Width}} x {{.Height}} <br>
+                genre : {{.Genre.Name}}
+            </div>
+            <button id="buy-product"><strong>Price:</strong><span class="price">{{printf "%.2f" .Price}}</span>$</button>
         </div>
-        </main>
+          {{end}}
+          {{if and $.Active (ne .Author.ID $.User.ID)}}
+            <div class="product">
+                <p class="title">{{.Title}}</p>
+                <img src="{{.Src}}" alt="some-img"/>
+                <div id="summary">
+                    description : {{.Description}} <br>
+                    autor : {{.Author.FirstName}} {{.Author.LastName}} <br>
+                    size : {{.Width}} x {{.Height}} <br>
+                    genre : {{.Genre.Name}}
+                </div>
+                <button id="buy-product"><strong>Price:</strong><span class="price">{{printf "%.2f" .Price}}</span>$</button>
+            </div>
+            {{end}}
+          {{end}}
+        </section>
+    </div>
+</main>
       <footer>
         <p>@ArtGallery</p>
       </footer>

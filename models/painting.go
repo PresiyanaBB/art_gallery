@@ -12,7 +12,6 @@ type Painting struct {
 	Src               template.URL
 	Author            User
 	DateOfPublication time.Time
-	DateOfSale        time.Time
 	Width             int
 	Height            int
 	Genre             Genre

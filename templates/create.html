@@ -3,48 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="../styles/form.css" />
+    <link rel="stylesheet" type="text/css" href="../styles/styles.css" />
     <title>Create</title>
 </head>
 <body>
     <section id="create">
-        <div class="form">
+        <div class="form" >
           <h2>Add Painting</h2>
-          <form class="create-form">
-            <input
-              type="text"
-              name="name"
-              id="name"
-              placeholder="Painting Name"
-            />
-            <input
-              type="text"
-              name="imageUrl"
-              id="product-image"
-              placeholder="Painting Image"
-            />
-            <input
-              type="text"
-              name="category"
-              id="product-category"
-              placeholder="Category"
-            />
-            <textarea
-              id="product-description"
-              name="description"
-              placeholder="Description"
-              rows="5"
-              cols="50"
-            ></textarea>
-            
-            <input
-              type="text"
-              name="price"
-              id="product-price"
-              placeholder="Price"
-            />
-
-            <button type="submit">Add</button>
+          <form class="create-form" action="/create_painting" method="POST">
+            <input type="text" name="name" id="name" placeholder="Painting Name" />
+            <input type="text" name="imageUrl" id="product-image" placeholder="Painting Image" />
+            <label id="genre-drop-down" for="options">Genre:</label><select id="options" name="category">
+              {{range .}}
+                <option value="{{.}}">{{.}}</option>
+              {{end}}</select>
+            <textarea id="product-description" name="description" placeholder="Description" rows="5" cols="50"></textarea>
+            <input type="text" name="height" placeholder="Height" />
+            <input type="text" name="width" placeholder="Width" />
+            <input type="text" name="price" id="product-price" placeholder="Price"/>
+            <button type="submit" >Add</button>
           </form>
         </div>
       </section>

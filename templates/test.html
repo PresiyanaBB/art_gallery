@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Selector</title>
+</head>
+<body>
+    <input type="file" accept="image/*" id="imageInput" style="display: none;">
+    <button onclick="openFileExplorer()">Select Image</button>
+    <br>
+    <img id="selectedImage" style="display: none;">
+    
+    <script>
+        function openFileExplorer() {
+            document.getElementById("imageInput").click();
+        }
+
+        document.getElementById("imageInput").addEventListener("change", function() {
+            var file = this.files[0];
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var img = document.getElementById("selectedImage");
+                    img.src = e.target.result;
+                    img.style.display = "block";
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+</body>
+</html>

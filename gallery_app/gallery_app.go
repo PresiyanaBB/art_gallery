@@ -13,6 +13,12 @@ type PaintingRepository interface {
 	SellPainting(id string) error
 	FindByUserEmail(email string) (*model.User, error)
 	AddUser(u *model.User) error
+	GetAllGenres() ([]string, error)
+	FindGenre(genre string) (*model.Genre, error)
+	AddGenre(genre *model.Genre) error
+	RemoveAllGenres() error
+	FindGenreByID(id string) (*model.Genre, error)
+	FindUserByID(id string) (*model.User, error)
 }
 
 type ArtGalleryApp struct {
@@ -63,4 +69,28 @@ func (g *ArtGalleryApp) FindByUserEmail(email string) (*model.User, error) {
 
 func (g *ArtGalleryApp) AddUser(user *model.User) error {
 	return g.paintings.AddUser(user)
+}
+
+func (g *ArtGalleryApp) GetAllGenres() ([]string, error) {
+	return g.paintings.GetAllGenres()
+}
+
+func (g *ArtGalleryApp) FindGenre(genre string) (*model.Genre, error) {
+	return g.paintings.FindGenre(genre)
+}
+
+func (g *ArtGalleryApp) AddGenre(genre *model.Genre) error {
+	return g.paintings.AddGenre(genre)
+}
+
+func (g *ArtGalleryApp) RemoveAllGenres() error {
+	return g.paintings.RemoveAllGenres()
+}
+
+func (g *ArtGalleryApp) FindUserByID(id string) (*model.User, error) {
+	return g.paintings.FindUserByID(id)
+}
+
+func (g *ArtGalleryApp) FindGenreByID(id string) (*model.Genre, error) {
+	return g.paintings.FindGenreByID(id)
 }
