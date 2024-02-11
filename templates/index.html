@@ -55,7 +55,17 @@
                 size : {{.Width}} x {{.Height}} <br>
                 genre : {{.Genre.Name}}
             </div>
-            <button id="buy-product"><strong>Price:</strong><span class="price">{{printf "%.2f" .Price}}</span>$</button>
+
+            <!-- Button to trigger the popup window -->
+            <button onclick="openPopup()" id="buy-product"><strong>Price:</strong><span class="price">{{printf "%.2f" .Price}}</span>$</button>
+            <!-- Modal dialog -->
+            <div id="myModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+            <button class="close" onclick="closePopup()">&times;</button> <!-- Close button -->
+            <p style="margin: 25%;">Thank you for your purchase!</p>
+            </div>
+            </div>
         </div>
           {{end}}
           {{if and $.Active (ne .Author.ID $.User.ID)}}
@@ -68,7 +78,18 @@
                     size : {{.Width}} x {{.Height}} <br>
                     genre : {{.Genre.Name}}
                 </div>
-                <button id="buy-product"><strong>Price:</strong><span class="price">{{printf "%.2f" .Price}}</span>$</button>
+                
+                <!-- Button to trigger the popup window -->
+            <button onclick="openPopup()" id="buy-product"><strong>Price:</strong><span class="price">{{printf "%.2f" .Price}}</span>$</button>
+            <!-- Modal dialog -->
+            <div id="myModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+            <button class="close" onclick="closePopup()">&times;</button> <!-- Close button -->
+            <p style="margin: 25%;">Thank you for your purchase!</p>
+            </div>
+            </div>
+
             </div>
             {{end}}
           {{end}}
@@ -80,5 +101,16 @@
       <p>@ArtGallery</p>
     </footer>
     </div>
+
+    <!-- JavaScript to handle opening and closing the popup -->
+<script>
+  function openPopup() {
+      document.getElementById("myModal").style.display = "block";
+  }
+
+  function closePopup() {
+      document.getElementById("myModal").style.display = "none";
+  }
+</script>
 </body>
 </html>

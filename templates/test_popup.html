@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Popup Window Example</title>
+<style>
+    /* CSS for modal dialog */
+    .modal {
+        display: none; /* Hide modal by default */
+        position: fixed; /* Position modal */
+        z-index: 1; /* Set z-index to ensure it appears above other content */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scrolling if needed */
+        background-color: rgba(0,0,0,0.4); /* Black background with opacity */
+    }
+
+    /* CSS for modal content */
+    .modal-content {
+        background-color: #fefefe; /* White background */
+        margin: 15% auto; /* Center modal vertically and horizontally */
+        padding: 20px;
+        border: 1px solid #888;
+        width: 20%;
+        height: 25%;
+    }
+
+    /* Close button style */
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+</style>
+</head>
+<body>
+
+<!-- Button to trigger the popup window -->
+<button onclick="openPopup()">Open Popup</button>
+
+<!-- Modal dialog -->
+<div id="myModal" class="modal">
+  <!-- Modal content -->
+  <div class="modal-content">
+    <button class="close" onclick="closePopup()">&times;</button> <!-- Close button -->
+    <p>This is a popup window!</p>
+  </div>
+</div>
+
+<!-- JavaScript to handle opening and closing the popup -->
+<script>
+    // Function to open the popup
+    function openPopup() {
+        document.getElementById("myModal").style.display = "block";
+    }
+
+    // Function to close the popup
+    function closePopup() {
+        document.getElementById("myModal").style.display = "none";
+    }
+</script>
+
+</body>
+</html>

@@ -52,7 +52,7 @@ func (g *gallery) Run() error {
 	g.mux.HandleFunc("/enter_account", g.handleEnterAccount)
 	g.mux.HandleFunc("/create_account", g.handleCreateAccount)
 	g.mux.HandleFunc("/account", g.handleAccount)
-	//
+	//painting manager
 	g.mux.HandleFunc("/create", g.handleCreate)
 	g.mux.HandleFunc("/create_painting", g.handleCreatePainting)
 	g.mux.HandleFunc("/edit_painting", g.handleEditPainting)
@@ -65,6 +65,7 @@ func (g *gallery) Run() error {
 	g.templateCreate = template.Must(template.ParseFiles("./templates/create.html"))
 	g.templateAccount = template.Must(template.ParseFiles("./templates/account.html"))
 	g.templateEdit = template.Must(template.ParseFiles("./templates/edit.html"))
+
 	log.Printf("server is listening at %s\n", g.server.Addr)
 	if err := g.server.ListenAndServe(); err != nil {
 		fmt.Println(fmt.Errorf("failed to start service on port %s:%w", g.server.Addr, err))
