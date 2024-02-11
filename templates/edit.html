@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" type="image/png" sizes="32x32" href="../images/logo.png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="../styles/styles.css"  type="text/css" rel="stylesheet">
+    <title>Edit</title>
+</head>
+<body>
+    <section id="create">
+        <div class="form" >
+          <h2>Edit Painting</h2>
+          <form class="create-form" action="/update_editted_painting" method="POST">
+            <input type="hidden" name="painting_id" value="{{.Painting.ID}}">
+            <input type="text" name="name" id="name" value="{{.Painting.Title}}" />
+            <input type="text" name="imageUrl" id="product-image" value="{{.Painting.Src}}" />
+            <label id="genre-drop-down" for="options">Genre:</label><select id="options" name="category">
+              {{range .GenreTypes}}
+                <option value="{{.}}" {{if eq . $.Painting.Genre.Name}}selected{{end}}>{{.}}</option>
+              {{end}}</select>
+            <textarea id="product-description" name="description" rows="5" cols="50">{{.Painting.Description}}</textarea>
+            <input type="text" name="height" value="{{.Painting.Height}}" />
+            <input type="text" name="width" value="{{.Painting.Width}}" />
+            <input type="text" name="price" id="product-price" value="{{.Painting.Price}}"/>
+            <button type="submit" >Edit</button>
+          </form>
+        </div>
+      </section>
+</body>
+</html>

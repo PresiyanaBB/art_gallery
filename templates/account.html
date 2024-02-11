@@ -4,7 +4,9 @@
   <link rel="icon" type="image/png" sizes="32x32" href="../images/logo.png">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="../styles/styles.css"  type="text/css" rel="stylesheet">
+  <link href="../styles/dashboard.css"  type="text/css" rel="stylesheet">
+  <link href="../styles/navigation.css"  type="text/css" rel="stylesheet">
+  <link href="../styles/details.css"  type="text/css" rel="stylesheet">
   <title>Account</title>
 </head>
 <body>
@@ -37,7 +39,6 @@
                     name : {{.User.FirstName}} {{.User.LastName}} <br>
                     email : {{.User.Email}} <br>
                     profile created : {{.User.DateOfRegistration.Format "02-Jan-2006"}}
-                    <!--moje da grumne datata nz-->
                 </p>
             </div>
 
@@ -47,7 +48,6 @@
         <section id="dashboard">
           {{range .Paint}}
             {{if eq .Author.ID $.User.ID}}
-            <!-- nevigate to somehow edit everything open create and put all info-->
             <div class="product">
                 <p class="title">{{.Title}}</p>
                 <img src="{{.Src}}" alt="some-img"/>
@@ -56,8 +56,25 @@
                     autor : {{.Author.FirstName}} {{.Author.LastName}} <br>
                     size : {{.Width}} x {{.Height}} <br>
                     genre : {{.Genre.Name}}
+                    <br>
+                    <strong>Price:</strong><span class="price">{{printf "%.2f" .Price}}</span>$
                 </div>
-                <button id="buy-product"><strong>Price:</strong><span class="price">{{printf "%.2f" .Price}}</span>$</button>
+                <div class="button-container">
+                  <div class="button-cell">
+                    <form action="/edit_painting" method="POST">
+                      <!-- Hidden input field to send painting ID -->
+                      <input type="hidden" name="painting_id" value="{{.ID}}">
+                      <button id="buy-product" type="submit" name="edit_painting_btn"><strong>Edit</strong></button>
+                    </form>
+                  </div>
+                  <div class="button-cell">
+                    <form action="/delete_painting" method="POST">
+                      <!-- Hidden input field to send painting ID -->
+                      <input type="hidden" name="painting_id" value="{{.ID}}">
+                      <button id="buy-product" type="submit" name="delete_painting_btn"><strong>Delete</strong></button>
+                    </form>
+                  </div>
+                </div>
             </div>
           {{end}}
           {{end}}

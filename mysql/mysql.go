@@ -93,7 +93,15 @@ func (r *MySQLRepository) FindByTitle(title string) ([]model.Painting, error) {
 	defer rows.Close()
 	for rows.Next() {
 		var result model.Painting
-		rows.Scan(&result.ID, &result.Title, &result.Description, &result.Src, &result.Author, &result.DateOfPublication, &result.Width, &result.Height, &result.Genre)
+		var date string
+		var authID string
+		var genreID string
+		rows.Scan(&result.ID, &result.Title, &result.Description, &result.Src, &authID, &date, &result.Width, &result.Height, &genreID, &result.Price)
+		result.DateOfPublication, _ = time.Parse("2006-01-02 15:04:05.9999999", date)
+		u, _ := r.FindUserByID(authID)
+		g, _ := r.FindGenreByID(genreID)
+		result.Author = *u
+		result.Genre = *g
 		paintings = append(paintings, result)
 	}
 	if err := rows.Err(); err != nil {
@@ -115,7 +123,15 @@ func (r *MySQLRepository) FindBySize(width int, height int) ([]model.Painting, e
 	defer rows.Close()
 	for rows.Next() {
 		var result model.Painting
-		rows.Scan(&result.ID, &result.Title, &result.Description, &result.Src, &result.Author, &result.DateOfPublication, &result.Width, &result.Height, &result.Genre)
+		var date string
+		var authID string
+		var genreID string
+		rows.Scan(&result.ID, &result.Title, &result.Description, &result.Src, &authID, &date, &result.Width, &result.Height, &genreID, &result.Price)
+		result.DateOfPublication, _ = time.Parse("2006-01-02 15:04:05.9999999", date)
+		u, _ := r.FindUserByID(authID)
+		g, _ := r.FindGenreByID(genreID)
+		result.Author = *u
+		result.Genre = *g
 		paintings = append(paintings, result)
 	}
 	if err := rows.Err(); err != nil {
@@ -137,7 +153,15 @@ func (r *MySQLRepository) FindByGenre(genre string) ([]model.Painting, error) {
 	defer rows.Close()
 	for rows.Next() {
 		var result model.Painting
-		rows.Scan(&result.ID, &result.Title, &result.Description, &result.Src, &result.Author, &result.DateOfPublication, &result.Width, &result.Height, &result.Genre)
+		var date string
+		var authID string
+		var genreID string
+		rows.Scan(&result.ID, &result.Title, &result.Description, &result.Src, &authID, &date, &result.Width, &result.Height, &genreID, &result.Price)
+		result.DateOfPublication, _ = time.Parse("2006-01-02 15:04:05.9999999", date)
+		u, _ := r.FindUserByID(authID)
+		g, _ := r.FindGenreByID(genreID)
+		result.Author = *u
+		result.Genre = *g
 		paintings = append(paintings, result)
 	}
 	if err := rows.Err(); err != nil {
@@ -159,23 +183,21 @@ func (r *MySQLRepository) FindByAuthor(name string) ([]model.Painting, error) {
 	defer rows.Close()
 	for rows.Next() {
 		var result model.Painting
-		rows.Scan(&result.ID, &result.Title, &result.Description, &result.Src, &result.Author, &result.DateOfPublication, &result.Width, &result.Height, &result.Genre)
+		var date string
+		var authID string
+		var genreID string
+		rows.Scan(&result.ID, &result.Title, &result.Description, &result.Src, &authID, &date, &result.Width, &result.Height, &genreID, &result.Price)
+		result.DateOfPublication, _ = time.Parse("2006-01-02 15:04:05.9999999", date)
+		u, _ := r.FindUserByID(authID)
+		g, _ := r.FindGenreByID(genreID)
+		result.Author = *u
+		result.Genre = *g
 		paintings = append(paintings, result)
 	}
 	if err := rows.Err(); err != nil {
 		return nil, fmt.Errorf("error iterating paintings: %w", err)
 	}
 	return paintings, nil
-}
-
-func (r *MySQLRepository) SellPainting(id string) error {
-	if r.client == nil {
-		return fmt.Errorf("mysql repository is not initilized")
-	}
-
-	_, err := r.client.Exec("DELETE FROM paintings WHERE id = ?", id)
-
-	return err
 }
 
 func (r *MySQLRepository) FindByUserEmail(email string) (*model.User, error) {
@@ -268,7 +290,7 @@ func (r *MySQLRepository) AddGenre(genre *model.Genre) error {
 	return err
 }
 
-func (r *MySQLRepository) RemoveAllGenres() error {
+func (r *MySQLRepository) DeleteAllGenres() error {
 	if r.client == nil {
 		return fmt.Errorf("mysql repository is not initilized")
 	}
@@ -321,4 +343,43 @@ func (r *MySQLRepository) FindUserByID(id string) (*model.User, error) {
 		return nil, fmt.Errorf("error iterating users: %w", err)
 	}
 	return users, nil
+}
+
+func (r *MySQLRepository) FindPaintingByID(id string) (*model.Painting, error) {
+	if r.client == nil {
+		return nil, fmt.Errorf("mysql repository is not initilized")
+	}
+	var painting model.Painting
+
+	rows, err := r.client.Query("SELECT * FROM paintings WHERE id = ?", id)
+	if err != nil {
+		return nil, fmt.Errorf("mysql query failure: %w", err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var result model.Painting
+		var date string
+		var authID string
+		var genreID string
+		rows.Scan(&result.ID, &result.Title, &result.Description, &result.Src, &authID, &date, &result.Width, &result.Height, &genreID, &result.Price)
+		result.DateOfPublication, _ = time.Parse("2006-01-02 15:04:05.9999999", date)
+		u, _ := r.FindUserByID(authID)
+		g, _ := r.FindGenreByID(genreID)
+		result.Author = *u
+		result.Genre = *g
+		painting = result
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating paintings: %w", err)
+	}
+	return &painting, nil
+}
+
+func (r *MySQLRepository) DeletePaintingByID(id string) error {
+	if r.client == nil {
+		return fmt.Errorf("mysql repository is not initilized")
+	}
+	_, err := r.client.Exec("DELETE FROM paintings WHERE id = ?", id)
+
+	return err
 }

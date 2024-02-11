@@ -6,6 +6,18 @@
 
 }
 
+.button-container {
+  display: table;
+  width: 100%;
+  text-align: center;
+}
+
+.button-cell {
+  display: table-cell;
+  vertical-align: middle;
+  padding: 0.5em;
+}
+
 #account-info {
   text-align: left; 
   padding-left: 42%;

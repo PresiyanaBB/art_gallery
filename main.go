@@ -28,6 +28,7 @@ type gallery struct {
 	templateRegister *template.Template
 	templateCreate   *template.Template
 	templateAccount  *template.Template
+	templateEdit     *template.Template
 }
 
 func (g *gallery) Run() error {
@@ -54,12 +55,16 @@ func (g *gallery) Run() error {
 	//
 	g.mux.HandleFunc("/create", g.handleCreate)
 	g.mux.HandleFunc("/create_painting", g.handleCreatePainting)
+	g.mux.HandleFunc("/edit_painting", g.handleEditPainting)
+	g.mux.HandleFunc("/update_editted_painting", g.handleUpdateEdittedPainting)
+	g.mux.HandleFunc("/delete_painting", g.handleDeletePainting)
 	//load html templates
 	g.templateIndex = template.Must(template.ParseFiles("./templates/index.html"))
 	g.templateLogin = template.Must(template.ParseFiles("./templates/login.html"))
 	g.templateRegister = template.Must(template.ParseFiles("./templates/register.html"))
 	g.templateCreate = template.Must(template.ParseFiles("./templates/create.html"))
 	g.templateAccount = template.Must(template.ParseFiles("./templates/account.html"))
+	g.templateEdit = template.Must(template.ParseFiles("./templates/edit.html"))
 	log.Printf("server is listening at %s\n", g.server.Addr)
 	if err := g.server.ListenAndServe(); err != nil {
 		fmt.Println(fmt.Errorf("failed to start service on port %s:%w", g.server.Addr, err))
@@ -239,6 +244,81 @@ func (g *gallery) handleCreatePainting(writer http.ResponseWriter, request *http
 	painting.Height, _ = strconv.Atoi(height)
 	painting.Width, _ = strconv.Atoi(width)
 
+	g.app.AddPainting(&painting)
+	http.Redirect(writer, request, "/", http.StatusFound)
+}
+
+func (g *gallery) handleDeletePainting(writer http.ResponseWriter, request *http.Request) {
+	err := request.ParseForm()
+	if err != nil {
+		log.Printf("error parsing html form: %v", err)
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	painting_id := request.Form.Get("painting_id")
+	g.app.DeletePaintingByID(painting_id)
+	http.Redirect(writer, request, "/", http.StatusFound)
+}
+
+func (g *gallery) handleEditPainting(writer http.ResponseWriter, request *http.Request) {
+	err := request.ParseForm()
+	if err != nil {
+		log.Printf("error parsing html form: %v", err)
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	painting_id := request.Form.Get("painting_id")
+	p, _ := g.app.FindPaintingByID(painting_id)
+	genres, _ := g.app.GetAllGenres()
+
+	data := struct {
+		Painting   model.Painting
+		GenreTypes []string
+	}{
+		Painting:   *p,
+		GenreTypes: genres,
+	}
+
+	writer.WriteHeader(http.StatusOK)
+	g.templateEdit.Execute(writer, data)
+}
+
+func (g *gallery) handleUpdateEdittedPainting(writer http.ResponseWriter, request *http.Request) {
+	err := request.ParseForm()
+	if err != nil {
+		log.Printf("error parsing html form: %v", err)
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	name := request.Form.Get("name")
+	img := request.Form.Get("imageUrl")
+	category := request.Form.Get("category")
+	height := request.Form.Get("height")
+	width := request.Form.Get("width")
+	description := request.Form.Get("description")
+	price := request.Form.Get("price")
+	painting_id := request.Form.Get("painting_id")
+
+	var painting model.Painting
+	painting.ID = uuid.New().String()
+	painting.Author = activeUser
+	painting.DateOfPublication = time.Now()
+	painting.Description = description
+	painting.Price, _ = strconv.ParseFloat(price, 64)
+	painting.Title = name
+	painting.Src = template.URL(img)
+	var gg *model.Genre
+	gg, _ = g.app.FindGenre(category)
+	if gg != nil {
+		painting.Genre = *gg
+	}
+	painting.Height, _ = strconv.Atoi(height)
+	painting.Width, _ = strconv.Atoi(width)
+
+	g.app.DeletePaintingByID(painting_id)
 	g.app.AddPainting(&painting)
 	http.Redirect(writer, request, "/", http.StatusFound)
 }

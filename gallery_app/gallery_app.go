@@ -10,15 +10,16 @@ type PaintingRepository interface {
 	FindBySize(width int, height int) ([]model.Painting, error)
 	FindByGenre(genre string) ([]model.Painting, error)
 	FindByAuthor(name string) ([]model.Painting, error)
-	SellPainting(id string) error
 	FindByUserEmail(email string) (*model.User, error)
 	AddUser(u *model.User) error
 	GetAllGenres() ([]string, error)
 	FindGenre(genre string) (*model.Genre, error)
 	AddGenre(genre *model.Genre) error
-	RemoveAllGenres() error
+	DeleteAllGenres() error
 	FindGenreByID(id string) (*model.Genre, error)
 	FindUserByID(id string) (*model.User, error)
+	FindPaintingByID(id string) (*model.Painting, error)
+	DeletePaintingByID(id string) error
 }
 
 type ArtGalleryApp struct {
@@ -59,10 +60,6 @@ func (g *ArtGalleryApp) FindByAuthor(name string) ([]model.Painting, error) {
 	return g.paintings.FindByAuthor(name)
 }
 
-func (g *ArtGalleryApp) SellPainting(id string) error {
-	return g.paintings.SellPainting(id)
-}
-
 func (g *ArtGalleryApp) FindByUserEmail(email string) (*model.User, error) {
 	return g.paintings.FindByUserEmail(email)
 }
@@ -83,8 +80,8 @@ func (g *ArtGalleryApp) AddGenre(genre *model.Genre) error {
 	return g.paintings.AddGenre(genre)
 }
 
-func (g *ArtGalleryApp) RemoveAllGenres() error {
-	return g.paintings.RemoveAllGenres()
+func (g *ArtGalleryApp) DeleteAllGenres() error {
+	return g.paintings.DeleteAllGenres()
 }
 
 func (g *ArtGalleryApp) FindUserByID(id string) (*model.User, error) {
@@ -93,4 +90,12 @@ func (g *ArtGalleryApp) FindUserByID(id string) (*model.User, error) {
 
 func (g *ArtGalleryApp) FindGenreByID(id string) (*model.Genre, error) {
 	return g.paintings.FindGenreByID(id)
+}
+
+func (g *ArtGalleryApp) FindPaintingByID(id string) (*model.Painting, error) {
+	return g.paintings.FindPaintingByID(id)
+}
+
+func (g *ArtGalleryApp) DeletePaintingByID(id string) error {
+	return g.paintings.DeletePaintingByID(id)
 }
