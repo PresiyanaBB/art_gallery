@@ -27,6 +27,7 @@ type gallery struct {
 	templateLogin    *template.Template
 	templateRegister *template.Template
 	templateCreate   *template.Template
+	templateAccount  *template.Template
 }
 
 func (g *gallery) Run() error {
@@ -49,6 +50,7 @@ func (g *gallery) Run() error {
 	g.mux.HandleFunc("/register", g.handleRegister)
 	g.mux.HandleFunc("/enter_account", g.handleEnterAccount)
 	g.mux.HandleFunc("/create_account", g.handleCreateAccount)
+	g.mux.HandleFunc("/account", g.handleAccount)
 	//
 	g.mux.HandleFunc("/create", g.handleCreate)
 	g.mux.HandleFunc("/create_painting", g.handleCreatePainting)
@@ -57,6 +59,7 @@ func (g *gallery) Run() error {
 	g.templateLogin = template.Must(template.ParseFiles("./templates/login.html"))
 	g.templateRegister = template.Must(template.ParseFiles("./templates/register.html"))
 	g.templateCreate = template.Must(template.ParseFiles("./templates/create.html"))
+	g.templateAccount = template.Must(template.ParseFiles("./templates/account.html"))
 	log.Printf("server is listening at %s\n", g.server.Addr)
 	if err := g.server.ListenAndServe(); err != nil {
 		fmt.Println(fmt.Errorf("failed to start service on port %s:%w", g.server.Addr, err))
@@ -177,6 +180,26 @@ func (g *gallery) handleCreateAccount(writer http.ResponseWriter, request *http.
 	activeUser = new_user
 	g.app.AddUser(&activeUser)
 	http.Redirect(writer, request, "/", http.StatusFound)
+}
+
+func (g *gallery) handleAccount(writer http.ResponseWriter, request *http.Request) {
+	paintings, err := g.app.GetAll()
+	if err != nil {
+		log.Printf("failed to get posts: %v", err)
+		writer.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	data := struct {
+		User  model.User
+		Paint []model.Painting
+	}{
+		User:  activeUser,
+		Paint: paintings,
+	}
+
+	writer.WriteHeader(http.StatusOK)
+	g.templateAccount.Execute(writer, data)
 }
 
 func (g *gallery) handleCreate(writer http.ResponseWriter, request *http.Request) {

@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="../styles/styles.css"  type="text/css" rel="stylesheet">
-  <title>Home</title>
+  <title>Account</title>
 </head>
 <body>
     <div id="wrapper">
@@ -13,52 +13,41 @@
           <!-- Navigation -->
           <a id="logo" href="/"><img id="logo-img" src="./images/logo.png" alt="logo"/></a>
           <nav>
-            {{if .Active}}
               <div id="greeting">
                   <p>Hello, {{.User.FirstName}}</p>
               </div>
-            {{end}}
             <div>
               <a href="/dashboard">Paintings</a>
             </div>
   
             <!-- Logged-in users -->
-            {{if .Active}}
               <div class="user">
                 <a href="/create">Add Painting</a>
                 <a href="/account">Account</a>
                 <a href="/logout" id="logoutBtn">Logout</a>
               </div>
-            {{else}}
-            <!-- Guest users -->
-              <div class="guest">
-                <a href="/login">Login</a>
-                <a href="/register">Register</a>
-              </div>
-            {{end}}
           </nav>
         </header>
   </div>
         <main id="content" style="margin-top: 5em;">
-    <!-- Home page -->
+
+            <div class="row">
+                <h2>Account Info</h2>
+                <h4 id="account-info">
+                    name : {{.User.FirstName}} {{.User.LastName}} <br>
+                    email : {{.User.Email}} <br>
+                    profile created : {{.User.DateOfRegistration.Format "02-Jan-2006"}}
+                    <!--moje da grumne datata nz-->
+                </p>
+            </div>
+
+    <!-- Personal paintings -->
     <div class="row">
-        <h2>Paintings</h2>
+        <h2>My Paintings</h2>
         <section id="dashboard">
           {{range .Paint}}
-          {{if not $.Active}}
-          <div class="product">
-            <p class="title">{{.Title}}</p>
-            <img src="{{.Src}}" alt="some-img"/>
-            <div id="summary" style="font-family: 'Alkalami', serif;">
-                description : {{.Description}} <br>
-                autor : {{.Author.FirstName}} {{.Author.LastName}} <br>
-                size : {{.Width}} x {{.Height}} <br>
-                genre : {{.Genre.Name}}
-            </div>
-            <button id="buy-product"><strong>Price:</strong><span class="price">{{printf "%.2f" .Price}}</span>$</button>
-        </div>
-          {{end}}
-          {{if and $.Active (ne .Author.ID $.User.ID)}}
+            {{if eq .Author.ID $.User.ID}}
+            <!-- nevigate to somehow edit everything open create and put all info-->
             <div class="product">
                 <p class="title">{{.Title}}</p>
                 <img src="{{.Src}}" alt="some-img"/>
@@ -70,15 +59,15 @@
                 </div>
                 <button id="buy-product"><strong>Price:</strong><span class="price">{{printf "%.2f" .Price}}</span>$</button>
             </div>
-            {{end}}
+          {{end}}
           {{end}}
         </section>
     </div>
 </main>
 <div id="wrapper">
-  <footer>
-      <p>@ArtGallery</p>
-    </footer>
-    </div>
+<footer>
+    <p>@ArtGallery</p>
+  </footer>
+  </div>
 </body>
 </html>

@@ -6,6 +6,13 @@
 
 }
 
+#account-info {
+  text-align: left; 
+  padding-left: 42%;
+  color: rgb(245, 48, 81);
+  font-family: 'Alkalami', serif;
+}
+
 #buy-product {
   font-family: 'Alkalami', serif;
   font-family: 'Kaushan Script', cursive;

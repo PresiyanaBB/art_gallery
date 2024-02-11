@@ -48,7 +48,7 @@ func (r *MySQLRepository) GetAll() ([]model.Painting, error) {
 		var authID string
 		var genreID string
 		rows.Scan(&result.ID, &result.Title, &result.Description, &result.Src, &authID, &date, &result.Width, &result.Height, &genreID, &result.Price)
-		result.DateOfPublication, _ = time.Parse("Jan 2, 2006 at 3:04pm (MST)", date)
+		result.DateOfPublication, _ = time.Parse("2006-01-02 15:04:05.9999999", date)
 		u, _ := r.FindUserByID(authID)
 		g, _ := r.FindGenreByID(genreID)
 		result.Author = *u
@@ -195,8 +195,8 @@ func (r *MySQLRepository) FindByUserEmail(email string) (*model.User, error) {
 		var result model.User
 		var dateOfReg string
 		rows.Scan(&result.ID, &result.FirstName, &result.LastName, &dateOfReg, &result.Email, &result.Password)
+		result.DateOfRegistration, _ = time.Parse("2006-01-02 15:04:05.9999999", dateOfReg)
 		users = &result
-		users.DateOfRegistration, _ = time.Parse("Jan 2, 2006 at 3:04pm (MST)", dateOfReg)
 	}
 	if err := rows.Err(); err != nil {
 		return nil, fmt.Errorf("error iterating users: %w", err)
@@ -315,7 +315,7 @@ func (r *MySQLRepository) FindUserByID(id string) (*model.User, error) {
 		var dateOfReg string
 		rows.Scan(&result.ID, &result.FirstName, &result.LastName, &dateOfReg, &result.Email, &result.Password)
 		users = &result
-		users.DateOfRegistration, _ = time.Parse("Jan 2, 2006 at 3:04pm (MST)", dateOfReg)
+		users.DateOfRegistration, _ = time.Parse("2006-01-02 15:04:05.9999999", dateOfReg)
 	}
 	if err := rows.Err(); err != nil {
 		return nil, fmt.Errorf("error iterating users: %w", err)
