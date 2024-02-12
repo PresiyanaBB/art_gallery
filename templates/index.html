@@ -62,8 +62,12 @@
             <div id="myModal" class="modal">
             <!-- Modal content -->
             <div class="modal-content">
-            <button class="close" onclick="closePopup()">&times;</button> <!-- Close button -->
+              <form action="/delete_painting" method="POST">
+                <!-- Hidden input field to send painting ID -->
+                <input type="hidden" name="painting_id" value="{{.ID}}">
+                <button class="close" style="margin-top: -25%;" type="submit" onclick="closePopup()">&times;</button> <!-- Close button -->
             <p style="margin: 25%;">Thank you for your purchase!</p>
+          </form>  
             </div>
             </div>
         </div>
@@ -85,8 +89,12 @@
             <div id="myModal" class="modal">
             <!-- Modal content -->
             <div class="modal-content">
-            <button class="close" onclick="closePopup()">&times;</button> <!-- Close button -->
+              <form action="/delete_painting" method="POST">
+                <!-- Hidden input field to send painting ID -->
+                <input type="hidden" name="painting_id" value="{{.ID}}">
+                <button class="close" style="margin-top: -25%;" type="submit" onclick="closePopup()">&times;</button> <!-- Close button -->
             <p style="margin: 25%;">Thank you for your purchase!</p>
+          </form>  
             </div>
             </div>
 
