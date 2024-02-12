@@ -146,7 +146,8 @@ func (r *MySQLRepository) FindByGenre(genre string) ([]model.Painting, error) {
 	}
 	var paintings []model.Painting
 
-	rows, err := r.client.Query("SELECT * FROM paintings WHERE genre = ?", genre)
+	g, _ := r.FindGenre(genre)
+	rows, err := r.client.Query("SELECT * FROM paintings WHERE genre = ?", g.ID)
 	if err != nil {
 		return nil, fmt.Errorf("mysql query failure: %w", err)
 	}
@@ -170,33 +171,39 @@ func (r *MySQLRepository) FindByGenre(genre string) ([]model.Painting, error) {
 	return paintings, nil
 }
 
-func (r *MySQLRepository) FindByAuthor(name string) ([]model.Painting, error) {
+func (r *MySQLRepository) FindByUserName(name string) ([]model.Painting, error) {
 	if r.client == nil {
 		return nil, fmt.Errorf("mysql repository is not initilized")
 	}
 	var paintings []model.Painting
 
-	rows, err := r.client.Query("SELECT * FROM paintings WHERE author like '%?%'", name)
-	if err != nil {
-		return nil, fmt.Errorf("mysql query failure: %w", err)
+	users, _ := r.FindUsersByFirstName(name)
+
+	for _, v := range users {
+		query := fmt.Sprintf("SELECT * FROM paintings WHERE author like '%v%v%v'", "%", v.ID, "%")
+		rows, err := r.client.Query(query)
+		if err != nil {
+			return nil, fmt.Errorf("mysql query failure: %w", err)
+		}
+		for rows.Next() {
+			var result model.Painting
+			var date string
+			var authID string
+			var genreID string
+			rows.Scan(&result.ID, &result.Title, &result.Description, &result.Src, &authID, &date, &result.Width, &result.Height, &genreID, &result.Price)
+			result.DateOfPublication, _ = time.Parse("2006-01-02 15:04:05.9999999", date)
+			u, _ := r.FindUserByID(authID)
+			g, _ := r.FindGenreByID(genreID)
+			result.Author = *u
+			result.Genre = *g
+			paintings = append(paintings, result)
+		}
+		if err := rows.Err(); err != nil {
+			return nil, fmt.Errorf("error iterating paintings: %w", err)
+		}
+		rows.Close()
 	}
-	defer rows.Close()
-	for rows.Next() {
-		var result model.Painting
-		var date string
-		var authID string
-		var genreID string
-		rows.Scan(&result.ID, &result.Title, &result.Description, &result.Src, &authID, &date, &result.Width, &result.Height, &genreID, &result.Price)
-		result.DateOfPublication, _ = time.Parse("2006-01-02 15:04:05.9999999", date)
-		u, _ := r.FindUserByID(authID)
-		g, _ := r.FindGenreByID(genreID)
-		result.Author = *u
-		result.Genre = *g
-		paintings = append(paintings, result)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("error iterating paintings: %w", err)
-	}
+
 	return paintings, nil
 }
 
@@ -382,4 +389,194 @@ func (r *MySQLRepository) DeletePaintingByID(id string) error {
 	_, err := r.client.Exec("DELETE FROM paintings WHERE id = ?", id)
 
 	return err
+}
+
+func (r *MySQLRepository) FindGenreByName(name string) (*model.Genre, error) {
+	if r.client == nil {
+		return nil, fmt.Errorf("mysql repository is not initilized")
+	}
+
+	rows, err := r.client.Query("SELECT * FROM genres WHERE name = ?", name)
+	var res model.Genre
+	if err != nil {
+		return nil, fmt.Errorf("mysql query failure: %w", err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		rows.Scan(&res.ID, &res.Name)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating paintings: %w", err)
+	}
+	return &res, nil
+}
+
+func (r *MySQLRepository) FindUsersByFirstName(name string) ([]model.User, error) {
+	if r.client == nil {
+		return nil, fmt.Errorf("mysql repository is not initilized")
+	}
+
+	query := fmt.Sprintf("SELECT * FROM users WHERE first_name like '%v%v%v'", "%", name, "%")
+	rows, err := r.client.Query(query)
+	if err != nil {
+		return nil, fmt.Errorf("mysql query failure: %w", err)
+	}
+	defer rows.Close()
+
+	var users []model.User
+
+	for rows.Next() {
+		var result model.User
+		var dateOfReg string
+		rows.Scan(&result.ID, &result.FirstName, &result.LastName, &dateOfReg, &result.Email, &result.Password)
+		result.DateOfRegistration, _ = time.Parse("2006-01-02 15:04:05.9999999", dateOfReg)
+		users = append(users, result)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating users: %w", err)
+	}
+	return users, nil
+}
+
+func (r *MySQLRepository) FindByUserNameAndPaintingTitle(name string, title string) ([]model.Painting, error) {
+	if r.client == nil {
+		return nil, fmt.Errorf("mysql repository is not initilized")
+	}
+	var paintings []model.Painting
+
+	users, _ := r.FindUsersByFirstName(name)
+
+	for _, v := range users {
+		query := fmt.Sprintf("SELECT * FROM paintings WHERE author like '%v%v%v' and title like '%v%v%v'", "%", v.ID, "%", "%", title, "%")
+		rows, err := r.client.Query(query)
+		if err != nil {
+			return nil, fmt.Errorf("mysql query failure: %w", err)
+		}
+		for rows.Next() {
+			var result model.Painting
+			var date string
+			var authID string
+			var genreID string
+			rows.Scan(&result.ID, &result.Title, &result.Description, &result.Src, &authID, &date, &result.Width, &result.Height, &genreID, &result.Price)
+			result.DateOfPublication, _ = time.Parse("2006-01-02 15:04:05.9999999", date)
+			u, _ := r.FindUserByID(authID)
+			g, _ := r.FindGenreByID(genreID)
+			result.Author = *u
+			result.Genre = *g
+			paintings = append(paintings, result)
+		}
+		if err := rows.Err(); err != nil {
+			return nil, fmt.Errorf("error iterating paintings: %w", err)
+		}
+		rows.Close()
+	}
+
+	return paintings, nil
+}
+
+func (r *MySQLRepository) FindByUserNameAndGenre(name string, genreName string) ([]model.Painting, error) {
+	if r.client == nil {
+		return nil, fmt.Errorf("mysql repository is not initilized")
+	}
+	var paintings []model.Painting
+
+	genre, _ := r.FindGenreByName(genreName)
+	users, _ := r.FindUsersByFirstName(name)
+
+	for _, v := range users {
+		query := fmt.Sprintf("SELECT * FROM paintings WHERE author like '%v%v%v' and genre like '%v%v%v'", "%", v.ID, "%", "%", genre.ID, "%")
+		rows, err := r.client.Query(query)
+		if err != nil {
+			return nil, fmt.Errorf("mysql query failure: %w", err)
+		}
+		for rows.Next() {
+			var result model.Painting
+			var date string
+			var authID string
+			var genreID string
+			rows.Scan(&result.ID, &result.Title, &result.Description, &result.Src, &authID, &date, &result.Width, &result.Height, &genreID, &result.Price)
+			result.DateOfPublication, _ = time.Parse("2006-01-02 15:04:05.9999999", date)
+			u, _ := r.FindUserByID(authID)
+			g, _ := r.FindGenreByID(genreID)
+			result.Author = *u
+			result.Genre = *g
+			paintings = append(paintings, result)
+		}
+		if err := rows.Err(); err != nil {
+			return nil, fmt.Errorf("error iterating paintings: %w", err)
+		}
+		rows.Close()
+	}
+
+	return paintings, nil
+}
+
+func (r *MySQLRepository) FindByPaintingTitleAndGenre(title string, genreName string) ([]model.Painting, error) {
+	if r.client == nil {
+		return nil, fmt.Errorf("mysql repository is not initilized")
+	}
+	var paintings []model.Painting
+
+	genre, _ := r.FindGenreByName(genreName)
+
+	query := fmt.Sprintf("SELECT * FROM paintings WHERE title like '%v%v%v' and genre like '%v%v%v'", "%", title, "%", "%", genre.ID, "%")
+	rows, err := r.client.Query(query)
+	if err != nil {
+		return nil, fmt.Errorf("mysql query failure: %w", err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var result model.Painting
+		var date string
+		var authID string
+		var genreID string
+		rows.Scan(&result.ID, &result.Title, &result.Description, &result.Src, &authID, &date, &result.Width, &result.Height, &genreID, &result.Price)
+		result.DateOfPublication, _ = time.Parse("2006-01-02 15:04:05.9999999", date)
+		u, _ := r.FindUserByID(authID)
+		g, _ := r.FindGenreByID(genreID)
+		result.Author = *u
+		result.Genre = *g
+		paintings = append(paintings, result)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating paintings: %w", err)
+	}
+	return paintings, nil
+}
+
+func (r *MySQLRepository) FindByUserNameAndPaintingTitleAndCenre(name string, title string, genreName string) ([]model.Painting, error) {
+	if r.client == nil {
+		return nil, fmt.Errorf("mysql repository is not initilized")
+	}
+	var paintings []model.Painting
+
+	genre, _ := r.FindGenreByName(genreName)
+	users, _ := r.FindUsersByFirstName(name)
+
+	for _, v := range users {
+		query := fmt.Sprintf("SELECT * FROM paintings WHERE author like '%v%v%v' and genre like '%v%v%v' and title like '%v%v%v'", "%", v.ID, "%", "%", genre.ID, "%", "%", title, "%")
+		rows, err := r.client.Query(query)
+		if err != nil {
+			return nil, fmt.Errorf("mysql query failure: %w", err)
+		}
+		for rows.Next() {
+			var result model.Painting
+			var date string
+			var authID string
+			var genreID string
+			rows.Scan(&result.ID, &result.Title, &result.Description, &result.Src, &authID, &date, &result.Width, &result.Height, &genreID, &result.Price)
+			result.DateOfPublication, _ = time.Parse("2006-01-02 15:04:05.9999999", date)
+			u, _ := r.FindUserByID(authID)
+			g, _ := r.FindGenreByID(genreID)
+			result.Author = *u
+			result.Genre = *g
+			paintings = append(paintings, result)
+		}
+		if err := rows.Err(); err != nil {
+			return nil, fmt.Errorf("error iterating paintings: %w", err)
+		}
+		rows.Close()
+	}
+
+	return paintings, nil
 }

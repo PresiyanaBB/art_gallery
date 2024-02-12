@@ -43,6 +43,27 @@
     <!-- Home page -->
     <div class="row">
         <h2>Paintings</h2>
+
+        <form action="/" method="POST" style="padding-left: 35%;">
+          <input type="text" name="sb_author" id="sb_author" placeholder="author"> 
+          <input type="text" name="sb_title" id="sb_title" placeholder="title">
+          <label id="sb_category" for="options" style="color: #bd2c2c;"> genre:</label><select id="options" name="sb_category">
+          {{range .GenreTypes}}
+                <option value="{{.}}" {{if eq . "" }}selected{{end}}>{{.}}</option>
+          {{end}}</select>
+          <button type="submit" id="id-btn-filter" style="font-family: 'Kaushan Script', cursive;
+          text-transform: uppercase;
+          outline: 0;
+          background: rgb(231, 103, 124);
+          border: 0;
+          color: #ffffff;
+          cursor: pointer;
+          border-radius: 5px;"
+          onmouseover="this.style.backgroundColor= '#bd2c2c';"
+          onmouseout="this.style.backgroundColor='rgb(231, 103, 124)';"
+          >Search</button>
+        </form>
+
         <section id="dashboard">
           {{range .Paint}}
           {{if not $.Active}}

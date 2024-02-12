@@ -76,21 +76,57 @@ func (g *gallery) Run() error {
 }
 
 func (g *gallery) handleMain(writer http.ResponseWriter, request *http.Request) {
+	err := request.ParseForm()
+	if err != nil {
+		log.Printf("error parsing html form: %v", err)
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
 	paintings, err := g.app.GetAll()
+	genres, _ := g.app.GetAllGenres()
+
+	//parse form
+	sb_author := request.Form.Get("sb_author")
+	sb_title := request.Form.Get("sb_title")
+	category := request.Form.Get("sb_category")
+	if sb_author == "" && sb_title == "" && category == "" {
+	} else if sb_author != "" && sb_title != "" && category != "" {
+		paintings, err = g.app.FindByUserNameAndPaintingTitleAndCenre(sb_author, sb_title, category)
+	} else if sb_author == "" && sb_title != "" && category != "" {
+		paintings, err = g.app.FindByPaintingTitleAndGenre(sb_title, category)
+	} else if sb_author != "" && sb_title == "" && category != "" {
+		paintings, err = g.app.FindByUserNameAndGenre(sb_author, category)
+	} else if sb_author != "" && sb_title != "" && category == "" {
+		paintings, err = g.app.FindByUserNameAndPaintingTitle(sb_author, sb_title)
+	} else if sb_author != "" && sb_title == "" && category == "" {
+		paintings, err = g.app.FindByUserName(sb_author)
+	} else if sb_title != "" && sb_author == "" && category == "" {
+		paintings, err = g.app.FindByTitle(sb_title)
+	} else if category != "" && sb_title == "" && sb_author == "" {
+		paintings, err = g.app.FindByGenre(category)
+	}
+
 	if err != nil {
 		log.Printf("failed to get posts: %v", err)
 		writer.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
+	if len(paintings) == 0 {
+		paintings, _ = g.app.GetAll()
+	}
+
 	data := struct {
-		Active bool
-		User   model.User
-		Paint  []model.Painting
+		Active     bool
+		User       model.User
+		Paint      []model.Painting
+		GenreTypes []string
 	}{
-		Active: hasActiveUser,
-		User:   activeUser,
-		Paint:  paintings,
+		Active:     hasActiveUser,
+		User:       activeUser,
+		Paint:      paintings,
+		GenreTypes: genres,
 	}
 
 	writer.WriteHeader(http.StatusOK)

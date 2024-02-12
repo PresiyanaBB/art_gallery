@@ -9,7 +9,7 @@ type PaintingRepository interface {
 	FindByTitle(title string) ([]model.Painting, error)
 	FindBySize(width int, height int) ([]model.Painting, error)
 	FindByGenre(genre string) ([]model.Painting, error)
-	FindByAuthor(name string) ([]model.Painting, error)
+	FindByUserName(name string) ([]model.Painting, error)
 	FindByUserEmail(email string) (*model.User, error)
 	AddUser(u *model.User) error
 	GetAllGenres() ([]string, error)
@@ -20,6 +20,12 @@ type PaintingRepository interface {
 	FindUserByID(id string) (*model.User, error)
 	FindPaintingByID(id string) (*model.Painting, error)
 	DeletePaintingByID(id string) error
+	FindGenreByName(name string) (*model.Genre, error)
+	FindUsersByFirstName(name string) ([]model.User, error)
+	FindByUserNameAndPaintingTitle(name string, title string) ([]model.Painting, error)
+	FindByUserNameAndGenre(name string, genreName string) ([]model.Painting, error)
+	FindByPaintingTitleAndGenre(title string, genreName string) ([]model.Painting, error)
+	FindByUserNameAndPaintingTitleAndCenre(name string, title string, genreName string) ([]model.Painting, error)
 }
 
 type ArtGalleryApp struct {
@@ -56,8 +62,8 @@ func (g *ArtGalleryApp) FindByGenre(genre string) ([]model.Painting, error) {
 	return g.paintings.FindByGenre(genre)
 }
 
-func (g *ArtGalleryApp) FindByAuthor(name string) ([]model.Painting, error) {
-	return g.paintings.FindByAuthor(name)
+func (g *ArtGalleryApp) FindByUserName(name string) ([]model.Painting, error) {
+	return g.paintings.FindByUserName(name)
 }
 
 func (g *ArtGalleryApp) FindByUserEmail(email string) (*model.User, error) {
@@ -98,4 +104,28 @@ func (g *ArtGalleryApp) FindPaintingByID(id string) (*model.Painting, error) {
 
 func (g *ArtGalleryApp) DeletePaintingByID(id string) error {
 	return g.paintings.DeletePaintingByID(id)
+}
+
+func (g *ArtGalleryApp) FindGenreByName(name string) (*model.Genre, error) {
+	return g.paintings.FindGenreByName(name)
+}
+
+func (g *ArtGalleryApp) FindUsersByFirstName(name string) ([]model.User, error) {
+	return g.paintings.FindUsersByFirstName(name)
+}
+
+func (g *ArtGalleryApp) FindByUserNameAndPaintingTitle(name string, title string) ([]model.Painting, error) {
+	return g.paintings.FindByUserNameAndPaintingTitle(name, title)
+}
+
+func (g *ArtGalleryApp) FindByUserNameAndGenre(name string, genreName string) ([]model.Painting, error) {
+	return g.paintings.FindByUserNameAndGenre(name, genreName)
+}
+
+func (g *ArtGalleryApp) FindByPaintingTitleAndGenre(title string, genreName string) ([]model.Painting, error) {
+	return g.paintings.FindByPaintingTitleAndGenre(title, genreName)
+}
+
+func (g *ArtGalleryApp) FindByUserNameAndPaintingTitleAndCenre(name string, title string, genreName string) ([]model.Painting, error) {
+	return g.paintings.FindByUserNameAndPaintingTitleAndCenre(name, title, genreName)
 }

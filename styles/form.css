@@ -98,6 +98,7 @@
   margin-bottom: 10px;
   background-color: rgb(242, 242, 242);
 }
+
 .form button {
   font-family: 'Alkalami', serif;
   font-family: 'Kaushan Script', cursive;
@@ -118,7 +119,6 @@
 .form button:focus {
   background: #bd2c2c;
 }
-
 
 .container {
   position: relative;
@@ -141,4 +141,21 @@
 .form .message a {
   color: #bd2c2c;
   text-decoration: none;
+}
+
+.filter-form #search-filter-btn {
+  font-family: 'Kaushan Script', cursive;
+  text-transform: uppercase;
+  outline: 0;
+  background: rgb(231, 103, 124);
+  border: 0;
+  color: #ffffff;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.filter-form #search-filter-btn:hover,
+.filter-form #search-filter-btn:active,
+.filter-form #search-filter-btn:focus {
+  background: #bd2c2c;
 }
