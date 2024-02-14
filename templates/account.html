@@ -43,12 +43,12 @@
             </div>
 
     <!-- Personal paintings -->
-    <div class="row">
         <h2>My Paintings</h2>
-        <section id="dashboard">
+        <section id="dashboard" style="padding-bottom: 10em;">
+          <div class="row">
           {{range $i, $v := .Paint}}
             {{if eq $v.Author.ID $.User.ID}}
-            <div class="product">
+            <div class="product" style="width: 22em; float: left; margin: 2.7em; margin-bottom: 5em;">
                 <p class="title">{{$v.Title}}</p>
                 <img src="data:image/jpeg;base64,{{index $.EncodedImages $i}}" alt="some-img"/>
                 <div id="summary" style="font-family: 'Alkalami', serif;">
@@ -78,13 +78,8 @@
             </div>
           {{end}}
           {{end}}
+        </div>
         </section>
-    </div>
 </main>
-<div id="wrapper">
-<footer>
-    <p>@ArtGallery</p>
-  </footer>
-  </div>
 </body>
 </html>

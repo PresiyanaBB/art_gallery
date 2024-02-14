@@ -16,7 +16,7 @@
             <input type="file" accept="image/*" name="imageUrl" id="product-image"/>
             <label id="genre-drop-down" for="options">Genre:</label><select id="options" name="category">
               {{range .}}
-                <option value="{{.}}">{{.}}</option>
+                <option value="{{.}}" {{if eq . "" }}selected{{end}}>{{.}}</option>
               {{end}}</select>
             <textarea id="product-description" name="description" placeholder="Description" rows="5" cols="50"></textarea>
             <input type="text" name="height" placeholder="Height" />
@@ -26,26 +26,5 @@
           </form>
         </div>
       </section>
-      <!-- <script>
-        // Submit form on file selection
-        document.getElementById("uploadForm").addEventListener("change", function() {
-            this.submit();
-        });
-
-        // Handle response from server
-        document.getElementById("uploadForm").addEventListener("submit", function(event) {
-            event.preventDefault();
-            fetch('/upload', {
-                method: 'POST',
-                body: new FormData(this)
-            })
-            .then(response => response.text())
-            .then(src => {
-                // Display the uploaded photo
-                document.getElementById("imageContainer").innerHTML = `<img src="${src}" alt="Uploaded Photo">`;
-            })
-            .catch(error => console.error('Error:', error));
-        });
-    </script> -->
 </body>
 </html>

@@ -41,7 +41,6 @@
   </div>
         <main id="content" style="margin-top: 5em;">
     <!-- Home page -->
-    <div class="row">
         <h2>Paintings</h2>
 
         <form action="/" method="POST" style="padding-left: 35%;">
@@ -63,10 +62,11 @@
           onmouseout="this.style.backgroundColor='rgb(231, 103, 124)';"
           >Search</button>
         </form>
-        <section id="dashboard">
+        <section id="dashboard" style="padding-bottom: 10em;">
+          <div class="row">
           {{range $i, $v := .Paint}}
               {{if not $.Active}}
-                  <div class="product">
+                  <div class="product" style="width: 22em; float: left; margin: 2.7em; margin-bottom: 5em;">
                       <p class="title">{{$v.Title}}</p>
                       <img src="data:image/jpeg;base64,{{index $.EncodedImages $i}}" alt="some-img"/>
                       <div id="summary" style="font-family: 'Alkalami', serif;">
@@ -92,7 +92,7 @@
                   </div>
               {{end}}
               {{if and $.Active (ne $v.Author.ID $.User.ID)}}
-                  <div class="product">
+                  <div class="product" style="width: 22em; float: left; margin: 2.7em; margin-bottom: 5em;">
                       <p class="title">{{$v.Title}}</p>
                       <img src="data:image/jpeg;base64,{{index $.EncodedImages $i}}" alt="some-img"/>
                       <div id="summary" style="font-family: 'Alkalami', serif;">
@@ -118,6 +118,7 @@
                   </div>
               {{end}}
           {{end}}
+        </div>
       </section>
       
       <!-- JavaScript to handle opening and closing the popup -->
@@ -130,6 +131,5 @@
               document.getElementById(modalId).style.display = "none";
           }
       </script>
-      
 </body>
 </html>
