@@ -422,7 +422,7 @@ func main() {
 
 	galleryRepo := mysql.New(mysql.MySQLOptions{
 		URI: fmt.Sprintf("%s:%s@tcp(127.0.0.1)/art_gallery",
-			"sisi", "sisipresiana03"),
+			"{name}", "{password}"),
 	})
 	galleryRepo.Init()
 	gallery_appp := gallery_app.New(galleryRepo)
