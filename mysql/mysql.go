@@ -47,7 +47,7 @@ func (r *MySQLRepository) GetAll() ([]model.Painting, error) {
 		var date string
 		var authID string
 		var genreID string
-		rows.Scan(&result.ID, &result.Title, &result.Description, &result.Src, &authID, &date, &result.Width, &result.Height, &genreID, &result.Price)
+		rows.Scan(&result.ID, &result.Title, &result.Description, &result.MIMEType, &result.Data, &authID, &date, &result.Width, &result.Height, &genreID, &result.Price)
 		result.DateOfPublication, _ = time.Parse("2006-01-02 15:04:05.9999999", date)
 		u, _ := r.FindUserByID(authID)
 		g, _ := r.FindGenreByID(genreID)
@@ -65,8 +65,8 @@ func (r *MySQLRepository) AddPainting(p *model.Painting) error {
 	if r.client == nil {
 		return fmt.Errorf("mysql repository is not initilized")
 	}
-	_, err := r.client.Exec("INSERT INTO paintings(id, title, description, src, author, date_of_publication, width, height, genre,price) VALUES (?,?,?,?,?,?,?,?,?,?)",
-		p.ID, p.Title, p.Description, p.Src, p.Author.ID, p.DateOfPublication.String(), p.Width, p.Height, p.Genre.ID, p.Price)
+	_, err := r.client.Exec("INSERT INTO paintings(id, title, description, mime_type, data , author, date_of_publication, width, height, genre,price) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+		p.ID, p.Title, p.Description, p.MIMEType, p.Data, p.Author.ID, p.DateOfPublication.String(), p.Width, p.Height, p.Genre.ID, p.Price)
 
 	return err
 }
@@ -96,7 +96,7 @@ func (r *MySQLRepository) FindByTitle(title string) ([]model.Painting, error) {
 		var date string
 		var authID string
 		var genreID string
-		rows.Scan(&result.ID, &result.Title, &result.Description, &result.Src, &authID, &date, &result.Width, &result.Height, &genreID, &result.Price)
+		rows.Scan(&result.ID, &result.Title, &result.Description, &result.MIMEType, &result.Data, &authID, &date, &result.Width, &result.Height, &genreID, &result.Price)
 		result.DateOfPublication, _ = time.Parse("2006-01-02 15:04:05.9999999", date)
 		u, _ := r.FindUserByID(authID)
 		g, _ := r.FindGenreByID(genreID)
@@ -126,7 +126,7 @@ func (r *MySQLRepository) FindBySize(width int, height int) ([]model.Painting, e
 		var date string
 		var authID string
 		var genreID string
-		rows.Scan(&result.ID, &result.Title, &result.Description, &result.Src, &authID, &date, &result.Width, &result.Height, &genreID, &result.Price)
+		rows.Scan(&result.ID, &result.Title, &result.Description, &result.MIMEType, &result.Data, &authID, &date, &result.Width, &result.Height, &genreID, &result.Price)
 		result.DateOfPublication, _ = time.Parse("2006-01-02 15:04:05.9999999", date)
 		u, _ := r.FindUserByID(authID)
 		g, _ := r.FindGenreByID(genreID)
@@ -157,7 +157,7 @@ func (r *MySQLRepository) FindByGenre(genre string) ([]model.Painting, error) {
 		var date string
 		var authID string
 		var genreID string
-		rows.Scan(&result.ID, &result.Title, &result.Description, &result.Src, &authID, &date, &result.Width, &result.Height, &genreID, &result.Price)
+		rows.Scan(&result.ID, &result.Title, &result.Description, &result.MIMEType, &result.Data, &authID, &date, &result.Width, &result.Height, &genreID, &result.Price)
 		result.DateOfPublication, _ = time.Parse("2006-01-02 15:04:05.9999999", date)
 		u, _ := r.FindUserByID(authID)
 		g, _ := r.FindGenreByID(genreID)
@@ -190,7 +190,7 @@ func (r *MySQLRepository) FindByUserName(name string) ([]model.Painting, error) 
 			var date string
 			var authID string
 			var genreID string
-			rows.Scan(&result.ID, &result.Title, &result.Description, &result.Src, &authID, &date, &result.Width, &result.Height, &genreID, &result.Price)
+			rows.Scan(&result.ID, &result.Title, &result.Description, &result.MIMEType, &result.Data, &authID, &date, &result.Width, &result.Height, &genreID, &result.Price)
 			result.DateOfPublication, _ = time.Parse("2006-01-02 15:04:05.9999999", date)
 			u, _ := r.FindUserByID(authID)
 			g, _ := r.FindGenreByID(genreID)
@@ -297,15 +297,6 @@ func (r *MySQLRepository) AddGenre(genre *model.Genre) error {
 	return err
 }
 
-func (r *MySQLRepository) DeleteAllGenres() error {
-	if r.client == nil {
-		return fmt.Errorf("mysql repository is not initilized")
-	}
-
-	_, err := r.client.Exec("DELETE FROM genres")
-	return err
-}
-
 func (r *MySQLRepository) FindGenreByID(id string) (*model.Genre, error) {
 	if r.client == nil {
 		return nil, fmt.Errorf("mysql repository is not initilized")
@@ -368,7 +359,7 @@ func (r *MySQLRepository) FindPaintingByID(id string) (*model.Painting, error) {
 		var date string
 		var authID string
 		var genreID string
-		rows.Scan(&result.ID, &result.Title, &result.Description, &result.Src, &authID, &date, &result.Width, &result.Height, &genreID, &result.Price)
+		rows.Scan(&result.ID, &result.Title, &result.Description, &result.MIMEType, &result.Data, &authID, &date, &result.Width, &result.Height, &genreID, &result.Price)
 		result.DateOfPublication, _ = time.Parse("2006-01-02 15:04:05.9999999", date)
 		u, _ := r.FindUserByID(authID)
 		g, _ := r.FindGenreByID(genreID)
@@ -457,7 +448,7 @@ func (r *MySQLRepository) FindByUserNameAndPaintingTitle(name string, title stri
 			var date string
 			var authID string
 			var genreID string
-			rows.Scan(&result.ID, &result.Title, &result.Description, &result.Src, &authID, &date, &result.Width, &result.Height, &genreID, &result.Price)
+			rows.Scan(&result.ID, &result.Title, &result.Description, &result.MIMEType, &result.Data, &authID, &date, &result.Width, &result.Height, &genreID, &result.Price)
 			result.DateOfPublication, _ = time.Parse("2006-01-02 15:04:05.9999999", date)
 			u, _ := r.FindUserByID(authID)
 			g, _ := r.FindGenreByID(genreID)
@@ -494,7 +485,7 @@ func (r *MySQLRepository) FindByUserNameAndGenre(name string, genreName string) 
 			var date string
 			var authID string
 			var genreID string
-			rows.Scan(&result.ID, &result.Title, &result.Description, &result.Src, &authID, &date, &result.Width, &result.Height, &genreID, &result.Price)
+			rows.Scan(&result.ID, &result.Title, &result.Description, &result.MIMEType, &result.Data, &authID, &date, &result.Width, &result.Height, &genreID, &result.Price)
 			result.DateOfPublication, _ = time.Parse("2006-01-02 15:04:05.9999999", date)
 			u, _ := r.FindUserByID(authID)
 			g, _ := r.FindGenreByID(genreID)
@@ -530,7 +521,7 @@ func (r *MySQLRepository) FindByPaintingTitleAndGenre(title string, genreName st
 		var date string
 		var authID string
 		var genreID string
-		rows.Scan(&result.ID, &result.Title, &result.Description, &result.Src, &authID, &date, &result.Width, &result.Height, &genreID, &result.Price)
+		rows.Scan(&result.ID, &result.Title, &result.Description, &result.MIMEType, &result.Data, &authID, &date, &result.Width, &result.Height, &genreID, &result.Price)
 		result.DateOfPublication, _ = time.Parse("2006-01-02 15:04:05.9999999", date)
 		u, _ := r.FindUserByID(authID)
 		g, _ := r.FindGenreByID(genreID)
@@ -564,7 +555,7 @@ func (r *MySQLRepository) FindByUserNameAndPaintingTitleAndCenre(name string, ti
 			var date string
 			var authID string
 			var genreID string
-			rows.Scan(&result.ID, &result.Title, &result.Description, &result.Src, &authID, &date, &result.Width, &result.Height, &genreID, &result.Price)
+			rows.Scan(&result.ID, &result.Title, &result.Description, &result.MIMEType, &result.Data, &authID, &date, &result.Width, &result.Height, &genreID, &result.Price)
 			result.DateOfPublication, _ = time.Parse("2006-01-02 15:04:05.9999999", date)
 			u, _ := r.FindUserByID(authID)
 			g, _ := r.FindGenreByID(genreID)

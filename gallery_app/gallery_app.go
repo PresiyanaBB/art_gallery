@@ -15,7 +15,6 @@ type PaintingRepository interface {
 	GetAllGenres() ([]string, error)
 	FindGenre(genre string) (*model.Genre, error)
 	AddGenre(genre *model.Genre) error
-	DeleteAllGenres() error
 	FindGenreByID(id string) (*model.Genre, error)
 	FindUserByID(id string) (*model.User, error)
 	FindPaintingByID(id string) (*model.Painting, error)
@@ -84,10 +83,6 @@ func (g *ArtGalleryApp) FindGenre(genre string) (*model.Genre, error) {
 
 func (g *ArtGalleryApp) AddGenre(genre *model.Genre) error {
 	return g.paintings.AddGenre(genre)
-}
-
-func (g *ArtGalleryApp) DeleteAllGenres() error {
-	return g.paintings.DeleteAllGenres()
 }
 
 func (g *ArtGalleryApp) FindUserByID(id string) (*model.User, error) {

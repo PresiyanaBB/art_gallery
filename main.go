@@ -5,11 +5,14 @@ import (
 	model "art_gallery/models"
 	"art_gallery/mysql"
 	"crypto/sha256"
+	"encoding/base64"
 	"encoding/hex"
 	"fmt"
 	"html/template"
+	"io"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 
@@ -32,7 +35,6 @@ type gallery struct {
 }
 
 func (g *gallery) Run() error {
-	// g.app.RemoveAllGenres()
 	// for _, v := range model.GenreTypesString {
 	// 	var genre model.Genre
 	// 	genre.ID = uuid.New().String()
@@ -117,19 +119,28 @@ func (g *gallery) handleMain(writer http.ResponseWriter, request *http.Request) 
 		paintings, _ = g.app.GetAll()
 	}
 
+	var encodedData []string
+
+	for _, v := range paintings {
+		encodedData = append(encodedData, base64.StdEncoding.EncodeToString(v.Data))
+	}
+
 	data := struct {
-		Active     bool
-		User       model.User
-		Paint      []model.Painting
-		GenreTypes []string
+		Active        bool
+		User          model.User
+		Paint         []model.Painting
+		GenreTypes    []string
+		EncodedImages []string
 	}{
-		Active:     hasActiveUser,
-		User:       activeUser,
-		Paint:      paintings,
-		GenreTypes: genres,
+		Active:        hasActiveUser,
+		User:          activeUser,
+		Paint:         paintings,
+		GenreTypes:    genres,
+		EncodedImages: encodedData,
 	}
 
 	writer.WriteHeader(http.StatusOK)
+	writer.Header().Set("Content-Type", "text/html")
 	g.templateIndex.Execute(writer, data)
 }
 
@@ -232,12 +243,20 @@ func (g *gallery) handleAccount(writer http.ResponseWriter, request *http.Reques
 		return
 	}
 
+	var encodedData []string
+
+	for _, v := range paintings {
+		encodedData = append(encodedData, base64.StdEncoding.EncodeToString(v.Data))
+	}
+
 	data := struct {
-		User  model.User
-		Paint []model.Painting
+		User          model.User
+		Paint         []model.Painting
+		EncodedImages []string
 	}{
-		User:  activeUser,
-		Paint: paintings,
+		User:          activeUser,
+		Paint:         paintings,
+		EncodedImages: encodedData,
 	}
 
 	writer.WriteHeader(http.StatusOK)
@@ -257,8 +276,38 @@ func (g *gallery) handleCreatePainting(writer http.ResponseWriter, request *http
 		return
 	}
 
+	////////
+
+	file, handler, err := request.FormFile("imageUrl")
+	if err != nil {
+		http.Error(writer, "Error retrieving file", http.StatusBadRequest)
+		return
+	}
+	defer file.Close()
+
+	// Create a new file in the server to store the uploaded photo temporarily
+	tempFile, err := os.CreateTemp("", "temp-*.png")
+	if err != nil {
+		http.Error(writer, "Error saving file", http.StatusInternalServerError)
+		return
+	}
+	defer tempFile.Close()
+
+	// Copy the uploaded file to the temporary file
+	_, err = io.Copy(tempFile, file)
+	if err != nil {
+		http.Error(writer, "Error copying file", http.StatusInternalServerError)
+		return
+	}
+
+	// Read the temporary file content
+	data, err := os.ReadFile(tempFile.Name())
+	if err != nil {
+		http.Error(writer, "Error reading file", http.StatusInternalServerError)
+		return
+	}
+
 	name := request.Form.Get("name")
-	img := request.Form.Get("imageUrl")
 	category := request.Form.Get("category")
 	height := request.Form.Get("height")
 	width := request.Form.Get("width")
@@ -272,7 +321,8 @@ func (g *gallery) handleCreatePainting(writer http.ResponseWriter, request *http
 	painting.Description = description
 	painting.Price, _ = strconv.ParseFloat(price, 64)
 	painting.Title = name
-	painting.Src = template.URL(img)
+	painting.MIMEType = handler.Header.Get("Content-Type")
+	painting.Data = data
 	var gg *model.Genre
 	gg, _ = g.app.FindGenre(category)
 	if gg != nil {
@@ -282,7 +332,7 @@ func (g *gallery) handleCreatePainting(writer http.ResponseWriter, request *http
 	painting.Width, _ = strconv.Atoi(width)
 
 	g.app.AddPainting(&painting)
-	http.Redirect(writer, request, "/", http.StatusFound)
+	http.Redirect(writer, request, "/account", http.StatusFound)
 }
 
 func (g *gallery) handleDeletePainting(writer http.ResponseWriter, request *http.Request) {
@@ -330,14 +380,15 @@ func (g *gallery) handleUpdateEdittedPainting(writer http.ResponseWriter, reques
 		return
 	}
 
+	painting_id := request.Form.Get("painting_id")
+	currentPainting, _ := g.app.FindPaintingByID(painting_id)
+
 	name := request.Form.Get("name")
-	img := request.Form.Get("imageUrl")
 	category := request.Form.Get("category")
 	height := request.Form.Get("height")
 	width := request.Form.Get("width")
 	description := request.Form.Get("description")
 	price := request.Form.Get("price")
-	painting_id := request.Form.Get("painting_id")
 
 	var painting model.Painting
 	painting.ID = uuid.New().String()
@@ -346,7 +397,8 @@ func (g *gallery) handleUpdateEdittedPainting(writer http.ResponseWriter, reques
 	painting.Description = description
 	painting.Price, _ = strconv.ParseFloat(price, 64)
 	painting.Title = name
-	painting.Src = template.URL(img)
+	painting.MIMEType = currentPainting.MIMEType
+	painting.Data = currentPainting.Data
 	var gg *model.Genre
 	gg, _ = g.app.FindGenre(category)
 	if gg != nil {
@@ -357,7 +409,8 @@ func (g *gallery) handleUpdateEdittedPainting(writer http.ResponseWriter, reques
 
 	g.app.DeletePaintingByID(painting_id)
 	g.app.AddPainting(&painting)
-	http.Redirect(writer, request, "/", http.StatusFound)
+	writer.Header().Set("Content-Type", "text/html")
+	http.Redirect(writer, request, "/account", http.StatusFound)
 }
 
 func main() {

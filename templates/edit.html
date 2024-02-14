@@ -14,7 +14,6 @@
           <form class="create-form" action="/update_editted_painting" method="POST">
             <input type="hidden" name="painting_id" value="{{.Painting.ID}}">
             <input type="text" name="name" id="name" value="{{.Painting.Title}}" />
-            <input type="text" name="imageUrl" id="product-image" value="{{.Painting.Src}}" />
             <label id="genre-drop-down" for="options">Genre:</label><select id="options" name="category">
               {{range .GenreTypes}}
                 <option value="{{.}}" {{if eq . $.Painting.Genre.Name}}selected{{end}}>{{.}}</option>

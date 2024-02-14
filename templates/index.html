@@ -63,83 +63,73 @@
           onmouseout="this.style.backgroundColor='rgb(231, 103, 124)';"
           >Search</button>
         </form>
-
         <section id="dashboard">
-          {{range .Paint}}
-          {{if not $.Active}}
-          <div class="product">
-            <p class="title">{{.Title}}</p>
-            <img src="{{.Src}}" alt="some-img"/>
-            <div id="summary" style="font-family: 'Alkalami', serif;">
-                description : {{.Description}} <br>
-                autor : {{.Author.FirstName}} {{.Author.LastName}} <br>
-                size : {{.Width}} x {{.Height}} <br>
-                genre : {{.Genre.Name}}
-            </div>
-
-            <!-- Button to trigger the popup window -->
-            <button onclick="openPopup()" id="buy-product"><strong>Price:</strong><span class="price">{{printf "%.2f" .Price}}</span>$</button>
-            <!-- Modal dialog -->
-            <div id="myModal" class="modal">
-            <!-- Modal content -->
-            <div class="modal-content">
-              <form action="/delete_painting" method="POST">
-                <!-- Hidden input field to send painting ID -->
-                <input type="hidden" name="painting_id" value="{{.ID}}">
-                <button class="close" style="margin-top: -25%;" type="submit" onclick="closePopup()">&times;</button> <!-- Close button -->
-              <p style="margin: 25%;">Thank you for your purchase!</p>
-            </form>  
-            </div>
-            </div>
-        </div>
+          {{range $i, $v := .Paint}}
+              {{if not $.Active}}
+                  <div class="product">
+                      <p class="title">{{$v.Title}}</p>
+                      <img src="data:image/jpeg;base64,{{index $.EncodedImages $i}}" alt="some-img"/>
+                      <div id="summary" style="font-family: 'Alkalami', serif;">
+                          description: {{$v.Description}} <br>
+                          author: {{$v.Author.FirstName}} {{$v.Author.LastName}} <br>
+                          size: {{$v.Width}} x {{$v.Height}} <br>
+                          genre: {{$v.Genre.Name}}
+                      </div>
+                      <!-- Button to trigger the popup window -->
+                      <button onclick="openPopup('myModal{{$v.ID}}')" id="buy-product"><strong>Price:</strong><span class="price">{{printf "%.2f" $v.Price}}</span>$</button>
+                      <!-- Modal dialog -->
+                      <div id="myModal{{$v.ID}}" class="modal">
+                          <!-- Modal content -->
+                          <div class="modal-content">
+                              <form action="/delete_painting" method="POST">
+                                  <!-- Hidden input field to send painting ID -->
+                                  <input type="hidden" name="painting_id" value="{{$v.ID}}">
+                                  <button class="close" style="margin-top: -25%;" type="submit" onclick="closePopup('myModal{{$v.ID}}')">&times;</button> <!-- Close button -->
+                                  <p style="margin: 25%;">Thank you for your purchase!</p>
+                              </form>
+                          </div>
+                      </div>
+                  </div>
+              {{end}}
+              {{if and $.Active (ne $v.Author.ID $.User.ID)}}
+                  <div class="product">
+                      <p class="title">{{$v.Title}}</p>
+                      <img src="data:image/jpeg;base64,{{index $.EncodedImages $i}}" alt="some-img"/>
+                      <div id="summary" style="font-family: 'Alkalami', serif;">
+                          description: {{$v.Description}} <br>
+                          author: {{$v.Author.FirstName}} {{$v.Author.LastName}} <br>
+                          size: {{$v.Width}} x {{$v.Height}} <br>
+                          genre: {{$v.Genre.Name}}
+                      </div>
+                      <!-- Button to trigger the popup window -->
+                      <button onclick="openPopup('myModal{{$v.ID}}')" id="buy-product"><strong>Price:</strong><span class="price">{{printf "%.2f" $v.Price}}</span>$</button>
+                      <!-- Modal dialog -->
+                      <div id="myModal{{$v.ID}}" class="modal">
+                          <!-- Modal content -->
+                          <div class="modal-content">
+                              <form action="/delete_painting" method="POST">
+                                  <!-- Hidden input field to send painting ID -->
+                                  <input type="hidden" name="painting_id" value="{{$v.ID}}">
+                                  <button class="close" style="margin-top: -25%;" type="submit" onclick="closePopup('myModal{{$v.ID}}')">&times;</button> <!-- Close button -->
+                                  <p style="margin: 25%;">Thank you for your purchase!</p>
+                              </form>
+                          </div>
+                      </div>
+                  </div>
+              {{end}}
           {{end}}
-          {{if and $.Active (ne .Author.ID $.User.ID)}}
-            <div class="product">
-                <p class="title">{{.Title}}</p>
-                <img src="{{.Src}}" alt="some-img"/>
-                <div id="summary" style="font-family: 'Alkalami', serif;">
-                    description : {{.Description}} <br>
-                    autor : {{.Author.FirstName}} {{.Author.LastName}} <br>
-                    size : {{.Width}} x {{.Height}} <br>
-                    genre : {{.Genre.Name}}
-                </div>
-                
-                <!-- Button to trigger the popup window -->
-            <button onclick="openPopup()" id="buy-product"><strong>Price:</strong><span class="price">{{printf "%.2f" .Price}}</span>$</button>
-            <!-- Modal dialog -->
-            <div id="myModal" class="modal">
-            <!-- Modal content -->
-            <div class="modal-content">
-              <form action="/delete_painting" method="POST">
-                <!-- Hidden input field to send painting ID -->
-                <input type="hidden" name="painting_id" value="{{.ID}}">
-                <button class="close" style="margin-top: -25%;" type="submit" onclick="closePopup()">&times;</button> <!-- Close button -->
-            <p style="margin: 25%;">Thank you for your purchase!</p>
-          </form>  
-            </div>
-            </div>
-
-            </div>
-            {{end}}
-          {{end}}
-        </section>
-    </div>
-</main>
-<div id="wrapper">
-  <footer>
-      <p>@ArtGallery</p>
-    </footer>
-    </div>
-
-    <!-- JavaScript to handle opening and closing the popup -->
-<script>
-  function openPopup() {
-      document.getElementById("myModal").style.display = "block";
-  }
-
-  function closePopup() {
-      document.getElementById("myModal").style.display = "none";
-  }
-</script>
+      </section>
+      
+      <!-- JavaScript to handle opening and closing the popup -->
+      <script>
+          function openPopup(modalId) {
+              document.getElementById(modalId).style.display = "block";
+          }
+      
+          function closePopup(modalId) {
+              document.getElementById(modalId).style.display = "none";
+          }
+      </script>
+      
 </body>
 </html>

@@ -46,31 +46,31 @@
     <div class="row">
         <h2>My Paintings</h2>
         <section id="dashboard">
-          {{range .Paint}}
-            {{if eq .Author.ID $.User.ID}}
+          {{range $i, $v := .Paint}}
+            {{if eq $v.Author.ID $.User.ID}}
             <div class="product">
-                <p class="title">{{.Title}}</p>
-                <img src="{{.Src}}" alt="some-img"/>
+                <p class="title">{{$v.Title}}</p>
+                <img src="data:image/jpeg;base64,{{index $.EncodedImages $i}}" alt="some-img"/>
                 <div id="summary" style="font-family: 'Alkalami', serif;">
-                    description : {{.Description}} <br>
-                    autor : {{.Author.FirstName}} {{.Author.LastName}} <br>
-                    size : {{.Width}} x {{.Height}} <br>
-                    genre : {{.Genre.Name}}
+                    description : {{$v.Description}} <br>
+                    autor : {{$v.Author.FirstName}} {{$v.Author.LastName}} <br>
+                    size : {{$v.Width}} x {{$v.Height}} <br>
+                    genre : {{$v.Genre.Name}}
                     <br>
-                    <strong>Price:</strong><span class="price">{{printf "%.2f" .Price}}</span>$
+                    <strong>Price:</strong><span class="price">{{printf "%.2f" $v.Price}}</span>$
                 </div>
                 <div class="button-container">
                   <div class="button-cell">
                     <form action="/edit_painting" method="POST">
                       <!-- Hidden input field to send painting ID -->
-                      <input type="hidden" name="painting_id" value="{{.ID}}">
+                      <input type="hidden" name="painting_id" value="{{$v.ID}}">
                       <button id="buy-product" type="submit" name="edit_painting_btn"><strong>Edit</strong></button>
                     </form>
                   </div>
                   <div class="button-cell">
                     <form action="/delete_painting" method="POST">
                       <!-- Hidden input field to send painting ID -->
-                      <input type="hidden" name="painting_id" value="{{.ID}}">
+                      <input type="hidden" name="painting_id" value="{{$v.ID}}">
                       <button id="buy-product" type="submit" name="delete_painting_btn"><strong>Delete</strong></button>
                     </form>
                   </div>

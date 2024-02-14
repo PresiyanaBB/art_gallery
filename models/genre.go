@@ -9,7 +9,8 @@ type GenreTypes int
 
 // Enumeration of genres
 const (
-	Portrait GenreTypes = iota
+	Undefined GenreTypes = iota
+	Portrait
 	Landscape
 	StillLife
 	History
@@ -23,6 +24,7 @@ const (
 
 // GenreNames maps genre constants to their string representations
 var GenreTypesString = map[GenreTypes]string{
+	Undefined:     "",
 	Portrait:      "Portrait",
 	Landscape:     "Landscape",
 	StillLife:     "StillLife",
